@@ -37,34 +37,40 @@ $(document).ready(function() {
 	
 	getISBN();
 	
-	/* Cri - 22/02/2012 : funzione che estrae tutti gli ISBN presenti in SQLite */
+	verificaUpdate();
+	
+	/* Cri - 22/02/2012 : funzione che estrae tutti gli ISBN presenti in SQLite e li stampa in un alert */
 	
 	function getISBN() {
 		
-		alert("START");
-		
-		var db = Titanium.Database.install("catalogo.db","catalogo");
-		/*
-		var db = Titanium.Database.open("catalogo");
-		*/
-		var rs = db.execute("SELECT volume_isbn FROM catalogo");
-		
-		var alertMsg = "ISBN presenti nel db SQLite:\n";
-		
-		while(rs.isValidRow()){
-			
-			alertMsg = alertMsg+"\n"+rs.fieldByName("volume_isbn");
+		var dbPath = Titanium.Filesystem.getFile('Resources/catalogo.sqlite');
 
-			rs.next();
+		if (dbPath.exists()) {
+			
+    		var db = Titanium.Database.openFile(dbPath);
+
+			var rs = db.execute("SELECT volume_isbn FROM catalogo");
+
+			var alertMsg = "ISBN presenti nel db SQLite:\n";
+		
+			while(rs.isValidRow()){
+			
+				alertMsg = alertMsg+"\n"+rs.fieldByName("volume_isbn");
+
+				rs.next();
+			}
+		
+			rs.close();
+		
+			db.close();
+		
+			alert(alertMsg);
+
+		} else {
+			
+			alert("Database non trovato");
 		}
-		
-		rs.close();
-		
-		db.close();
-		
-		alert(alertMsg);
 	}
-	
 
 
 	// PER CRI: ecco qulche funzione utile!
